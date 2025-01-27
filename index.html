@@ -21,6 +21,10 @@
       width: 100%;
       cursor: pointer;
     }
+    .feedback {
+      font-weight: bold;
+      margin-top: 10px;
+    }
     #score {
       font-weight: bold;
       margin-top: 20px;
@@ -31,10 +35,12 @@
   <h1>Science Quiz</h1>
   <div id="quiz-container">Loading...</div>
   <div id="score"></div>
+  <div id="feedback" class="feedback"></div>
 
   <script>
     const quizContainer = document.getElementById("quiz-container");
     const scoreDisplay = document.getElementById("score");
+    const feedbackDisplay = document.getElementById("feedback");
 
     let questions = [];
     let score = 0;
@@ -70,6 +76,8 @@
 
     // Generate a question with choices
     function generateQuestion() {
+      feedbackDisplay.textContent = ""; // Clear previous feedback
+
       if (currentQuestionIndex >= questions.length) {
         quizContainer.innerHTML = "<h2>Quiz Complete!</h2>";
         scoreDisplay.textContent = `Your final score is: ${score}/${questions.length}`;
@@ -106,9 +114,15 @@
       const currentQuestion = questions[currentQuestionIndex];
       if (selectedAnswer === currentQuestion.answer) {
         score++;
+        feedbackDisplay.textContent = "Correct!";
+        feedbackDisplay.style.color = "green";
+      } else {
+        feedbackDisplay.textContent = `Incorrect! The correct answer was: ${currentQuestion.answer}`;
+        feedbackDisplay.style.color = "red";
       }
+      scoreDisplay.textContent = `Score: ${score}/${questions.length}`;
       currentQuestionIndex++;
-      generateQuestion();
+      setTimeout(generateQuestion, 2000); // Wait 2 seconds before showing the next question
     }
 
     // Initialize the quiz
@@ -117,6 +131,7 @@
         const csvContent = await fetchCSV();
         questions = parseCSV(csvContent);
         generateQuestion();
+        scoreDisplay.textContent = `Score: ${score}/${questions.length}`;
       } catch (error) {
         quizContainer.textContent = "Failed to load quiz questions. Please try again later.";
         console.error(error);
